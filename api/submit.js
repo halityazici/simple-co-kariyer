@@ -42,8 +42,25 @@ export default function handler(req, res) {
         }
 
         try {
-            const formData = req.body;
+            const formDataRaw = req.body;
             const cvFile = req.file;
+
+            // XSS (Cross-Site Scripting) Koruması için temel sanitize fonksiyonu
+            const escapeHtml = (unsafe) => {
+                if (typeof unsafe !== 'string') return unsafe;
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            };
+
+            // Form içindeki tüm metin verilerini HTML etiketlerinden (Zararlı kodlardan) arındırma
+            const formData = {};
+            for (const key in formDataRaw) {
+                formData[key] = escapeHtml(formDataRaw[key] || '');
+            }
 
             const emailHtml = `
             <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #F8F6F0; padding: 40px 20px;">
