@@ -673,11 +673,16 @@
             if (window.parent) {
                 // Kısa bir süre bekleyip boyutu hesaplayalım (animasyonlardan dolayı)
                 setTimeout(() => {
-                    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
-                    window.parent.postMessage({
-                        action: "resizeIframe",
-                        height: height + 30
-                    }, "*");
+                    // Tüm sayfanın değil, sadece içteki form kutusunun boyunu ölçüyoruz.
+                    // Böylece iframe sonsuz bir döngüyle büyümeyi durduracaktır.
+                    const container = document.querySelector('.sc-form-container');
+                    if (container) {
+                        const contentHeight = container.offsetHeight;
+                        window.parent.postMessage({
+                            action: "resizeIframe",
+                            height: contentHeight + 100 // Üst ve alt padding payları (40+40 = 80) + biraz esneklik
+                        }, "*");
+                    }
                 }, 100);
             }
         }
