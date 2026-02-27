@@ -1,7 +1,11 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const multer = require('multer');
 
-// Multer ile dosyayı belleğe alıyoruz (sunucuda depolama izni olmadığı için)
+// Resend API anahtarı Vercel ortam (environment) değişkenlerinden alınır.
+// Vercel paneline "RESEND_API_KEY" adıyla eklenmelidir!
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Multer ile dosyayı belleğe alıyoruz
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 } // max 5 MB
@@ -30,23 +34,6 @@ export default function handler(req, res) {
             const formData = req.body;
             const cvFile = req.file;
 
-            // Vercel Environment variables'dan okuma yapmalısınız!
-            // Örnek: process.env.EMAIL_USER ve process.env.EMAIL_PASS
-            
-            // Lütfen bu alanı kendi kurumsal sunucu bilgileriniz ile özelleştirin.
-            const transporter = nodemailer.createTransport({
-                host: process.env.SMTP_HOST || "mail.simplechocolate.com.tr", // Sunucu SMTP Host adresi
-                port: process.env.SMTP_PORT || 465,
-                secure: true,
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
-                },
-                tls: {
-                    rejectUnauthorized: false
-                }
-            });
-
             const emailText = `
 Yeni bir kariyer formu başvurusu alındı!
 
@@ -72,8 +59,13 @@ Bizi Neden Seçti: ${formData.neden}
             `;
 
             let mailOptions = {
-                from: `"Simple Co Kariyer" <${process.env.EMAIL_USER}>`,
-                to: "info@simplechocolate.com.tr", // Başvurunun gideceği adres
+                // Resend üzerinde "Domain" ekleyene kadar test için 'onboarding@resend.dev' kullanmak zorundayız.
+                // İleride kendi alan adınızı eklerseniz burayı 'ik@simplechocolate.com.tr' yapabilirsiniz!
+                from: "Simple Co Kariyer <onboarding@resend.dev>",
+
+                // Başvuruların gideceği mail adresi (Not: Domain doğrulanmadığı sürece bu adres, Resend'e kayıt olduğunuz mail adresi olmak ZORUNDADIR!)
+                to: ["info@simplechocolate.com.tr"],
+
                 subject: `Yeni İş Başvurusu: ${formData.ad} ${formData.soyad} - ${formData.pozisyon}`,
                 text: emailText,
             };
@@ -89,12 +81,18 @@ Bizi Neden Seçti: ${formData.neden}
             }
 
             // Maili Gönder
-            await transporter.sendMail(mailOptions);
-            return res.status(200).json({ success: true, message: 'Başvuru başarıyla alındı.' });
+            const { data, error } = await resend.emails.send(mailOptions);
+
+            if (error) {
+                console.error('Mail Gönderim Hatası:', error);
+                return res.status(400).json({ error: 'İşlem başarısız.', details: error });
+            }
+
+            return res.status(200).json({ success: true, message: 'Başvuru başarıyla alındı.', data });
 
         } catch (error) {
-            console.error('Mail Gönderim Hatası:', error);
-            return res.status(500).json({ error: 'İşlem başarısız, mail gönderilemedi.' });
+            console.error('Bilinmeyen Hata:', error);
+            return res.status(500).json({ error: 'Sunucu hatası, işlem yapılamadı.' });
         }
     });
 }
