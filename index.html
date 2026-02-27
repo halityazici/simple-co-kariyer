@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Co - Kariyer Başvurusu</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Modern ve Zengin Tasarım CSS'i */
+        :root {
+            --brand-dark: #3E2723;
+            /* Koyu Çikolata */
+            --brand-primary: #795548;
+            /* Sütlü Çikolata */
+            --brand-light: #D7CCC8;
+            /* Açık Krem */
+            --brand-accent: #EFEBE9;
+            /* Arka Plan */
+            --white: #FFFFFF;
+            --text-main: #2C3E50;
+            --text-light: #7F8C8D;
+            --error: #E74C3C;
+            --success: #2ECC71;
+            --shadow: 0 10px 30px rgba(62, 39, 35, 0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--brand-accent);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .sc-form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .sc-header {
+            background: linear-gradient(135deg, var(--brand-dark), var(--brand-primary));
+            padding: 40px;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .sc-header h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .sc-header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+
+        .sc-body {
+            padding: 40px;
+        }
+
+        /* İlerleme Çubuğu (Progress Bar) */
+        .sc-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .sc-progress::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--brand-light);
+            z-index: 1;
+        }
+
+        .sc-step-circle {
+            width: 34px;
+            height: 34px;
+            background: var(--white);
+            border: 3px solid var(--brand-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-light);
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .sc-step-circle.active {
+            border-color: var(--brand-primary);
+            background: var(--brand-primary);
+            color: var(--white);
+            box-shadow: 0 0 0 5px rgba(121, 85, 72, 0.2);
+        }
+
+        .sc-step-circle.done {
+            border-color: var(--brand-dark);
+            background: var(--brand-dark);
+            color: var(--white);
+        }
+
+        /* Adımlar (Paneller) */
+        .sc-step-panel {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .sc-step-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sc-group {
+            margin-bottom: 24px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .sc-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--brand-dark);
+        }
+
+        .sc-input,
+        .sc-select,
+        .sc-textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--text-main);
+            background: #FAFAFA;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        .sc-input:focus,
+        .sc-select:focus,
+        .sc-textarea:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(121, 85, 72, 0.1);
+        }
+
+        .sc-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Radyo Seçenekleri */
+        .sc-radio-grid {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .sc-radio-item {
+            flex: 1;
+            min-width: 100px;
+            position: relative;
+        }
+
+        .sc-radio-item input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .sc-radio-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .sc-radio-item input:checked+.sc-radio-box {
+            border-color: var(--brand-primary);
+            background: rgba(121, 85, 72, 0.05);
+            color: var(--brand-primary);
+        }
+
+        /* Toggle (Switch) */
+        .sc-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .sc-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .sc-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .sc-toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #CBD5E1;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .sc-toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sc-toggle input:checked+.sc-toggle-slider {
+            background-color: var(--brand-primary);
+        }
+
+        .sc-toggle input:checked+.sc-toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Dosya Yükleme */
+        .sc-file-upload {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            border: 2px dashed #CBD5E1;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #FAFAFA;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sc-file-upload:hover {
+            border-color: var(--brand-primary);
+        }
+
+        .sc-file-upload input {
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .sc-file-icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .sc-error-text {
+            color: var(--error);
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        /* Güvenlik Sorusu */
+        .sc-captcha-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #FAFAFA;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #E0E0E0;
+        }
+
+        .sc-captcha-q {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--brand-dark);
+            min-width: 80px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        /* Butonlar */
+        .sc-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #E0E0E0;
+        }
+
+        .sc-btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-prev {
+            background: transparent;
+            color: var(--text-light);
+            border: 2px solid #E0E0E0;
+        }
+
+        .btn-prev:hover {
+            border-color: var(--brand-dark);
+            color: var(--brand-dark);
+        }
+
+        .btn-next,
+        .btn-submit {
+            background: var(--brand-primary);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(121, 85, 72, 0.3);
+        }
+
+        .btn-next:hover,
+        .btn-submit:hover {
+            background: var(--brand-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Özel İçi İçe Form Kutu Tasarımı */
+        .sc-subform {
+            background: rgba(121, 85, 72, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px dashed var(--brand-light);
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sc-form-container">
+        <div class="sc-header">
+            <h2>Kariyer Formu</h2>
+            <p>Aşağıdaki bilgileri doldurarak Simple Co ekibine katılın.</p>
+        </div>
+
+        <div class="sc-body">
+            <div class="sc-progress" id="sc-progress">
+                <div class="sc-step-circle active">1</div>
+                <div class="sc-step-circle">2</div>
+                <div class="sc-step-circle">3</div>
+                <div class="sc-step-circle">4</div>
+                <div class="sc-step-circle">5</div>
+            </div>
+
+            <form id="sc-career-form">
+
+                <!-- ADIM 1: Ad & Soyad -->
+                <div class="sc-step-panel active" id="sc-panel-1">
+                    <div class="sc-group">
+                        <label class="sc-label">Adınız *</label>
+                        <input type="text" name="ad" class="sc-input" required>
+                    </div>
+                    <div class="sc-group">
+                        <label class="sc-label">Soyadınız *</label>
+                        <input type="text" name="soyad" class="sc-input" required>
+                    </div>
+                </div>
+
+                <!-- ADIM 2: İş Geçmişi -->
+                <div class="sc-step-panel" id="sc-panel-2">
+
+                    <!-- Soru 1 -->
+                    <div class="sc-group">
+                        <label class="sc-label">Aktif olarak çalışıyor musunuz? *</label>
+                        <div class="sc-radio-grid">
+                            <label class="sc-radio-item">
+                                <input type="radio" name="aktif_calisiyor" value="evet" required
+                                    onchange="handleWorkStatus(this, 'current')">
+                                <div class="sc-radio-box">Evet</div>
+                            </label>
+                            <label class="sc-radio-item">
+                                <input type="radio" name="aktif_calisiyor" value="hayir" required
+                                    onchange="handleWorkStatus(this, 'current')">
+                                <div class="sc-radio-box">Hayır</div>
+                            </label>
+                            <label class="sc-radio-item">
+                                <input type="radio" name="aktif_calisiyor" value="diger" required
+                                    onchange="handleWorkStatus(this, 'current')">
+                                <div class="sc-radio-box">Diğer</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Soru 1 Alt Alanları -->
+                    <div id="current-yes" class="sc-subform hidden">
+                        <div class="sc-group"><label class="sc-label">Mevcut İş Yeri *</label><input type="text"
+                                name="m_is_yeri" class="sc-input req-current-yes"></div>
+                        <div class="sc-group"><label class="sc-label">Başlama Tarihi *</label><input type="date"
+                                name="m_baslama" class="sc-input req-current-yes"></div>
+                        <div class="sc-group"><label class="sc-label">İş Yerindeki Ünvanınız *</label><input type="text"
+                                name="m_unvan" class="sc-input req-current-yes"></div>
+                        <div class="sc-group"><label class="sc-label">Adres *</label><textarea name="m_adres"
+                                class="sc-textarea req-current-yes"></textarea></div>
+                        <div class="sc-group"><label class="sc-label">Telefon *</label><input type="tel"
+                                name="m_telefon" class="sc-input req-current-yes"></div>
+                    </div>
+
+                    <div id="current-other" class="sc-group hidden" style="margin-top: 15px;">
+                        <label class="sc-label">Lütfen açıklayınız *</label>
+                        <textarea name="m_diger_aciklama" class="sc-textarea req-current-other"
+                            placeholder="Açıklama alanını doldurunuz..."></textarea>
+                    </div>
+
+                    <hr style="border:0; border-top: 1px solid #E0E0E0; margin: 30px 0;">
+
+                    <!-- Soru 2 -->
+                    <div class="sc-group">
+                        <label class="sc-label">Bu işten önce çalışıyor muydunuz? *</label>
+                        <div class="sc-radio-grid">
+                            <label class="sc-radio-item">
+                                <input type="radio" name="once_calisiyor" value="evet" required
+                                    onchange="handleWorkStatus(this, 'prev')">
+                                <div class="sc-radio-box">Evet</div>
+                            </label>
+                            <label class="sc-radio-item">
+                                <input type="radio" name="once_calisiyor" value="hayir" required
+                                    onchange="handleWorkStatus(this, 'prev')">
+                                <div class="sc-radio-box">Hayır</div>
+                            </label>
+                            <label class="sc-radio-item">
+                                <input type="radio" name="once_calisiyor" value="diger" required
+                                    onchange="handleWorkStatus(this, 'prev')">
+                                <div class="sc-radio-box">Diğer</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Soru 2 Alt Alanları -->
+                    <div id="prev-yes" class="sc-subform hidden">
+                        <div class="sc-group"><label class="sc-label">Önceki İş Yeri *</label><input type="text"
+                                name="o_is_yeri" class="sc-input req-prev-yes"></div>
+                        <div class="sc-group"><label class="sc-label">Başlama ve Çıkış Tarihi *</label><input
+                                type="text" name="o_tarihler" class="sc-input req-prev-yes"
+                                placeholder="Örn: 2021-2023"></div>
+                        <div class="sc-group"><label class="sc-label">İş Yerindeki Ünvanınız *</label><input type="text"
+                                name="o_unvan" class="sc-input req-prev-yes"></div>
+                        <div class="sc-group"><label class="sc-label">Adres *</label><textarea name="o_adres"
+                                class="sc-textarea req-prev-yes"></textarea></div>
+                        <div class="sc-group"><label class="sc-label">Telefon *</label><input type="tel"
+                                name="o_telefon" class="sc-input req-prev-yes"></div>
+                    </div>
+
+                    <div id="prev-other" class="sc-group hidden" style="margin-top: 15px;">
+                        <label class="sc-label">Lütfen açıklayınız *</label>
+                        <textarea name="o_diger_aciklama" class="sc-textarea req-prev-other"
+                            placeholder="Açıklama alanını doldurunuz..."></textarea>
+                    </div>
+                </div>
+
+                <!-- ADIM 3: İletişim Tercihi -->
+                <div class="sc-step-panel" id="sc-panel-3">
+                    <div class="sc-group">
+                        <label class="sc-label" style="font-size: 18px;">Nasıl iletişime geçilmesini istersiniz?</label>
+                        <p style="font-size: 14px; color: var(--text-light); margin-top: -5px;">En az bir iletişim
+                            yöntemi seçmelisiniz.</p>
+                    </div>
+
+                    <!-- Ev Telefonu -->
+                    <div class="sc-toggle-row">
+                        <span style="font-weight: 500;">Ev Telefonu</span>
+                        <label class="sc-toggle">
+                            <input type="checkbox" id="t-home" onchange="toggleContact('home')">
+                            <span class="sc-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div id="w-home" class="sc-group hidden">
+                        <input type="tel" name="ev_tel" id="i-home" class="sc-input" placeholder="Ev Telefonu">
+                    </div>
+
+                    <!-- Cep Telefonu -->
+                    <div class="sc-toggle-row">
+                        <span style="font-weight: 500;">Cep Telefonu</span>
+                        <label class="sc-toggle">
+                            <input type="checkbox" id="t-cell" onchange="toggleContact('cell')">
+                            <span class="sc-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div id="w-cell" class="sc-group hidden">
+                        <input type="tel" name="cep_tel" id="i-cell" class="sc-input" placeholder="Cep Telefonu">
+                    </div>
+
+                    <!-- E-Posta -->
+                    <div class="sc-toggle-row">
+                        <span style="font-weight: 500;">E-Posta</span>
+                        <label class="sc-toggle">
+                            <input type="checkbox" id="t-email" onchange="toggleContact('email')">
+                            <span class="sc-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div id="w-email" class="sc-group hidden">
+                        <input type="email" name="eposta" id="i-email" class="sc-input" placeholder="E-Posta Adresi">
+                    </div>
+
+                    <div id="contact-err" class="sc-error-text">Lütfen en az bir iletişim yöntemi seçip doldurunuz.
+                    </div>
+                </div>
+
+                <!-- ADIM 4: CV -->
+                <div class="sc-step-panel" id="sc-panel-4">
+                    <div class="sc-group">
+                        <label class="sc-label">Özgeçmişiniz (CV) *</label>
+                        <label class="sc-file-upload">
+                            <span class="sc-file-icon">📄</span>
+                            <span id="cv-name"
+                                style="font-weight: 500; font-size: 16px; margin-bottom: 5px; display: block;">Dosya
+                                Seçmek İçin Tıklayın</span>
+                            <span style="font-size: 13px; color: var(--text-light);">PDF, DOC, DOCX, TXT (Max:
+                                5MB)</span>
+                            <input type="file" name="cv_file" id="cv_input" accept=".pdf,.doc,.docx,.txt" required
+                                onchange="handleFile(this)">
+                        </label>
+                        <div id="file-err" class="sc-error-text">Dosya boyutu 5MB'dan küçük olmalıdır!</div>
+                    </div>
+
+                    <div class="sc-group" style="margin-top: 30px;">
+                        <label class="sc-label">Online CV Linki (Örn: LinkedIn) - İsteğe Bağlı</label>
+                        <input type="url" name="cv_link" class="sc-input"
+                            placeholder="https://linkedin.com/in/profiliniz">
+                    </div>
+                </div>
+
+                <!-- ADIM 5: Son Detaylar -->
+                <div class="sc-step-panel" id="sc-panel-5">
+                    <div class="sc-group">
+                        <label class="sc-label">Maaş Beklentiniz *</label>
+                        <input type="number" name="maas" class="sc-input" required placeholder="Örn: 25000">
+                    </div>
+                    <div class="sc-group">
+                        <label class="sc-label">Çalışmak İstediğiniz Şube *</label>
+                        <select name="sube" class="sc-select" required>
+                            <option value="" disabled selected>Seçiniz</option>
+                            <option value="Tunalı">Tunalı</option>
+                            <option value="İncek Bulvar Loft">İncek Bulvar Loft</option>
+                            <option value="Mustafa Kemal Vega Center">Mustafa Kemal Vega Center</option>
+                            <option value="Akaretler">Akaretler</option>
+                            <option value="Kalamış">Kalamış</option>
+                        </select>
+                    </div>
+                    <div class="sc-group">
+                        <label class="sc-label">Başvuru Pozisyonu *</label>
+                        <select name="pozisyon" class="sc-select" required>
+                            <option value="" disabled selected>Seçiniz</option>
+                            <option value="Şube Yöneticisi">Şube Yöneticisi</option>
+                            <option value="Barista">Barista</option>
+                            <option value="Pastacı">Pastacı</option>
+                            <option value="Garson">Garson</option>
+                            <option value="Bulaşık - Genel Temizlik">Bulaşık - Genel Temizlik</option>
+                            <option value="Depocu / Şoför">Depocu / Şoför</option>
+                            <option value="İnsan Kaynakları">İnsan Kaynakları</option>
+                            <option value="Muhasebe">Muhasebe</option>
+                        </select>
+                    </div>
+                    <div class="sc-group">
+                        <label class="sc-label">Çalışma Şekli *</label>
+                        <select name="calisma" class="sc-select" required>
+                            <option value="" disabled selected>Seçiniz</option>
+                            <option value="Tam zamanlı">Tam zamanlı</option>
+                            <option value="Yarı zamanlı">Yarı zamanlı</option>
+                        </select>
+                    </div>
+                    <div class="sc-group">
+                        <label class="sc-label">Sizi neden işe almalıyız? *</label>
+                        <textarea name="neden" class="sc-textarea" required placeholder="Açıklayınız..."></textarea>
+                    </div>
+                    <div class="sc-group">
+                        <label class="sc-label">Güvenlik Sorusu *</label>
+                        <div class="sc-captcha-box">
+                            <span class="sc-captcha-q" id="cap-q"></span>
+                            <input type="number" id="cap-a" class="sc-input" required placeholder="Sonuç"
+                                style="max-width: 150px;">
+                        </div>
+                        <div id="cap-err" class="sc-error-text">İşlem sonucu yanlış!</div>
+                    </div>
+                </div>
+
+                <!-- Butonlar -->
+                <div class="sc-actions">
+                    <button type="button" class="sc-btn btn-prev" id="btn-prev" onclick="prevStep()"
+                        style="display: none;">Geri</button>
+                    <div style="flex:1;"></div>
+                    <button type="button" class="sc-btn btn-next" id="btn-next" onclick="nextStep()">İleri</button>
+                    <button type="submit" class="sc-btn btn-submit" id="btn-submit"
+                        style="display: none;">Gönder</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let totalSteps = 5; // 5 adım aktif
+        let capRes = 0;
+
+        function initCap() {
+            const n1 = Math.floor(Math.random() * 10) + 1;
+            const n2 = Math.floor(Math.random() * 10) + 1;
+            document.getElementById('cap-q').innerText = `${n1} + ${n2} =`;
+            capRes = n1 + n2;
+        }
+
+        function sendIframeHeight() {
+            if (window.parent) {
+                // Kısa bir süre bekleyip boyutu hesaplayalım (animasyonlardan dolayı)
+                setTimeout(() => {
+                    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+                    window.parent.postMessage({
+                        action: "resizeIframe",
+                        height: height + 30
+                    }, "*");
+                }, 100);
+            }
+        }
+
+        function scrollToParentTop() {
+            if (window.parent) {
+                window.parent.postMessage({ action: "scrollToTop" }, "*");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initCap();
+            updateView();
+            // Açılışta iframe boyutu gönder
+            window.addEventListener('load', sendIframeHeight);
+            window.addEventListener('resize', sendIframeHeight);
+        });
+
+        document.getElementById('sc-career-form').addEventListener('submit', async function (e) {
+            e.preventDefault(); // Sayfa yenilenmesini engelliyoruz
+
+            const userA = parseInt(document.getElementById('cap-a').value);
+            if (userA !== capRes) {
+                document.getElementById('cap-err').style.display = 'block';
+                initCap();
+                document.getElementById('cap-a').value = '';
+                return;
+            }
+
+            document.getElementById('cap-err').style.display = 'none';
+            const submitBtn = document.getElementById('btn-submit');
+            submitBtn.innerText = "Gönderiliyor...";
+            submitBtn.disabled = true;
+
+            const formData = new FormData(this);
+
+            try {
+                /* VERCEL SUNUCUSU IÇIN AKTIF EDILDI */
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('API Hatası');
+
+
+                alert("Kariyer formunuz başarıyla gönderildi! Teşekkür ederiz.");
+                window.location.reload(); // Başarılıysa sayfayı sıfırla
+            } catch (error) {
+                console.error('Gönderim hatası:', error);
+                alert("Form gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.");
+                submitBtn.innerText = "Gönder";
+                submitBtn.disabled = false;
+            }
+        });
+
+        function updateView() {
+            document.querySelectorAll('.sc-step-panel').forEach((el, index) => {
+                el.classList.toggle('active', index + 1 === currentStep);
+            });
+
+            document.querySelectorAll('.sc-step-circle').forEach((el, index) => {
+                if (index + 1 < currentStep) el.className = 'sc-step-circle done';
+                else if (index + 1 === currentStep) el.className = 'sc-step-circle active';
+                else el.className = 'sc-step-circle';
+                el.innerHTML = index + 1 < currentStep ? '✓' : index + 1;
+            });
+
+            document.getElementById('btn-prev').style.display = currentStep > 1 ? 'block' : 'none';
+
+            if (currentStep === totalSteps) {
+                document.getElementById('btn-next').style.display = 'none';
+                document.getElementById('btn-submit').style.display = 'block';
+            } else {
+                document.getElementById('btn-next').style.display = 'block';
+                document.getElementById('btn-submit').style.display = 'none';
+            }
+
+            sendIframeHeight();
+        }
+
+        function checkValidity() {
+            const stepPanel = document.getElementById(`sc-panel-${currentStep}`);
+
+            // Adım 3 Özel Kontrol: En az 1 iletişim seçili mi?
+            if (currentStep === 3) {
+                const isHome = document.getElementById('t-home').checked && document.getElementById('i-home').value.trim() !== '';
+                const isCell = document.getElementById('t-cell').checked && document.getElementById('i-cell').value.trim() !== '';
+                const isEmail = document.getElementById('t-email').checked && document.getElementById('i-email').value.trim() !== '';
+
+                if (!isHome && !isCell && !isEmail) {
+                    document.getElementById('contact-err').style.display = 'block';
+                    return false;
+                } else {
+                    document.getElementById('contact-err').style.display = 'none';
+                }
+            }
+
+            const inputs = stepPanel.querySelectorAll('input, select, textarea');
+            for (let el of inputs) {
+                // Gizli alanları kontrolden çıkarıyoruz
+                if (el.closest('.hidden')) continue;
+
+                el.setCustomValidity(''); // Reset custom validation
+
+                if (el.value.trim() !== '') {
+                    if (el.type === 'tel') {
+                        const digits = el.value.replace(/[^0-9]/g, '');
+                        if (digits.length < 10) {
+                            el.setCustomValidity("Lütfen geçerli bir telefon numarası giriniz (en az 10 haneli).");
+                        }
+                    } else if (el.type === 'email') {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(el.value)) {
+                            el.setCustomValidity("Lütfen geçerli bir e-posta adresi giriniz.");
+                        }
+                    }
+                }
+
+                if (!el.checkValidity()) {
+                    el.reportValidity();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function nextStep() {
+            if (!checkValidity()) return;
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateView();
+                scrollToParentTop();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateView();
+                scrollToParentTop();
+            }
+        }
+
+        // Dinamik Radio Alanları
+        function handleWorkStatus(radio, type) {
+            const val = radio.value;
+            const yesEl = document.getElementById(`${type}-yes`);
+            const otherEl = document.getElementById(`${type}-other`);
+
+            // Gereklilikleri kaldır
+            document.querySelectorAll(`.req-${type}-yes`).forEach(el => el.removeAttribute('required'));
+            document.querySelectorAll(`.req-${type}-other`).forEach(el => el.removeAttribute('required'));
+
+            // Gizle
+            yesEl.classList.add('hidden');
+            otherEl.classList.add('hidden');
+
+            if (val === 'evet') {
+                yesEl.classList.remove('hidden');
+                document.querySelectorAll(`.req-${type}-yes`).forEach(el => el.setAttribute('required', 'required'));
+            } else if (val === 'diger') {
+                otherEl.classList.remove('hidden');
+                document.querySelectorAll(`.req-${type}-other`).forEach(el => el.setAttribute('required', 'required'));
+            }
+        }
+
+        // İletişim Toggle
+        function toggleContact(type) {
+            const isChecked = document.getElementById(`t-${type}`).checked;
+            const wrapper = document.getElementById(`w-${type}`);
+            const input = document.getElementById(`i-${type}`);
+
+            if (isChecked) {
+                wrapper.classList.remove('hidden');
+                input.setAttribute('required', 'required');
+            } else {
+                wrapper.classList.add('hidden');
+                input.removeAttribute('required');
+                input.value = '';
+            }
+        }
+
+        // Dosya Upload Validasyon
+        function handleFile(input) {
+            const err = document.getElementById('file-err');
+            const nameDisp = document.getElementById('cv-name');
+
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                const sizeMB = file.size / (1024 * 1024);
+
+                if (sizeMB > 5) {
+                    err.style.display = 'block';
+                    input.value = '';
+                    nameDisp.innerText = "Dosya Seçmek İçin Tıklayın";
+                } else {
+                    err.style.display = 'none';
+                    nameDisp.innerText = file.name;
+                    nameDisp.style.color = 'var(--brand-primary)';
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>
