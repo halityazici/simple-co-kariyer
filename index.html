@@ -499,9 +499,16 @@
                     <div id="prev-yes" class="sc-subform hidden">
                         <div class="sc-group"><label class="sc-label">Önceki İş Yeri *</label><input type="text"
                                 name="o_is_yeri" class="sc-input req-prev-yes"></div>
-                        <div class="sc-group"><label class="sc-label">Başlama ve Çıkış Tarihi *</label><input
-                                type="text" name="o_tarihler" class="sc-input req-prev-yes"
-                                placeholder="Örn: 2021-2023"></div>
+                        <div class="sc-group" style="display: flex; gap: 15px;">
+                            <div style="flex: 1;">
+                                <label class="sc-label">Başlama Tarihi *</label>
+                                <input type="date" name="o_baslama" class="sc-input req-prev-yes">
+                            </div>
+                            <div style="flex: 1;">
+                                <label class="sc-label">Çıkış Tarihi *</label>
+                                <input type="date" name="o_cikis" class="sc-input req-prev-yes">
+                            </div>
+                        </div>
                         <div class="sc-group"><label class="sc-label">İş Yerindeki Ünvanınız *</label><input type="text"
                                 name="o_unvan" class="sc-input req-prev-yes"></div>
                         <div class="sc-group"><label class="sc-label">Adres *</label><textarea name="o_adres"

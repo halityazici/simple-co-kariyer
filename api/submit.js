@@ -131,7 +131,8 @@ export default function handler(req, res) {
                                 <table style="width: 100%; font-size:14px;">
                                     <tr><td style="width:30%; color:#8D6E63;">İş Yeri:</td><td style="font-weight:500;">${formData.o_is_yeri}</td></tr>
                                     <tr><td style="color:#8D6E63;">Ünvan:</td><td style="font-weight:500;">${formData.o_unvan}</td></tr>
-                                    <tr><td style="color:#8D6E63;">Tarihler:</td><td style="font-weight:500;">${formData.o_tarihler}</td></tr>
+                                    <tr><td style="color:#8D6E63;">Başlama:</td><td style="font-weight:500;">${formData.o_baslama}</td></tr>
+                                    <tr><td style="color:#8D6E63;">Çıkış:</td><td style="font-weight:500;">${formData.o_cikis}</td></tr>
                                     <tr><td style="color:#8D6E63;">Telefon:</td><td style="font-weight:500;">${formData.o_telefon}</td></tr>
                                     <tr><td style="color:#8D6E63;">Adres:</td><td style="font-weight:500;">${formData.o_adres}</td></tr>
                                 </table>
